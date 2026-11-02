@@ -1,13 +1,17 @@
 [project]
 name = "ecommerce-analytics-data-pipeline"
 version = "0.1.0"
-description = ""
+description = "E-commerce analytics pipeline: PostgreSQL (psycopg2, JSONB, window functions), Redis cache and MongoDB sessions"
 authors = [
     {name = "aklileseyoum",email = "aklileseyoum294@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "psycopg2-binary (>=2.9.13,<3.0.0)",
+    "pymongo (>=4.19.0,<5.0.0)",
+    "redis (>=8.1.0,<9.0.0)",
+    "pymango (>=0.1.1,<0.2.0)"
 ]
 
 [tool.poetry]
@@ -16,3 +20,14 @@ packages = [{include = "ecommerce_analytics_data_pipeline", from = "src"}]
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.2.0,<10.0.0)",
+    "pytest-cov (>=7.1.0,<8.0.0)",
+    "mypy (>=2.4.1,<3.0.0)",
+    "ruff (>=0.17.3,<0.18.0)",
+    "black (>=26.10.1,<27.0.0)",
+    "pre-commit (>=4.7.0,<5.0.0)",
+    "types-psycopg2 (>=2.9.21.20261030,<3.0.0.0)"
+]
