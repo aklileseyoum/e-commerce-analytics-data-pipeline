@@ -1,7 +1,7 @@
 [project]
 name = "ecommerce-analytics-data-pipeline"
 version = "0.1.0"
-description = ""
+description = "E-commerce analytics pipeline: PostgreSQL (psycopg2, JSONB, window functions), Redis cache and MongoDB sessions"
 authors = [
     {name = "aklileseyoum",email = "aklileseyoum294@gmail.com"}
 ]
