@@ -1,6 +1,10 @@
 """Demo: runs the whole pipeline once (Postgres + Redis + MongoDB)."""
 
-from ecommerce_analytics_data_pipeline.analytics import top_customers
+from ecommerce_analytics_data_pipeline.analytics import (
+    products_with_metadata,
+    top_customers,
+    top_products,
+)
 from ecommerce_analytics_data_pipeline.cache import (
     cache_top_products,
     get_cached_top_products,
@@ -30,9 +34,11 @@ def main() -> None:
     for name, total, rank in ranking:
         print(f"  #{rank} {name}: {total}")
 
-    # 3. Redis: cache the ranking for 60 s (str() because Decimal is not JSON).
-    cache_top_products([{"name": n, "total": str(t)} for n, t, _ in ranking])
+        # 3. Redis: cache the top 10 best-selling products for 60 s.
+    best = top_products()
+    cache_top_products([{"name": n, "units": int(u), "rank": r} for n, u, r in best])
     print("Cached:", get_cached_top_products(), "| expires in", top_products_ttl(), "s")
+    print("Red products:", products_with_metadata({"color": "red"}))
 
     # 4. MongoDB: save a cart session and read it back.
     save_session(1, [{"product_id": 1, "qty": 2}])
