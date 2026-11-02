@@ -22,7 +22,7 @@ ORDER BY spend_rank, c.name
 
 
 def top_customers() -> list[tuple[Any, ...]]:
-    """Return (name, total_spent_in_cents, spend_rank), best customer first."""
+    """Return (name, total_spent, spend_rank), best customer first."""
     conn = get_connection()
     try:
         with conn.cursor() as cur:
