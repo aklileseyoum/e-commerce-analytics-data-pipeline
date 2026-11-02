@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from psycopg2.extras import Json
+
 from .db import get_connection, release_connection
 
 TOP_CUSTOMERS_SQL = """
@@ -41,6 +43,43 @@ def explain_analyze(sql: str, params: tuple[Any, ...] = ()) -> list[str]:
     try:
         with conn.cursor() as cur:
             cur.execute("EXPLAIN ANALYZE " + sql, params)
+            return [row[0] for row in cur.fetchall()]
+    finally:
+        release_connection(conn)
+
+
+TOP_PRODUCTS_SQL = """
+SELECT p.prod_name,
+       SUM(oi.quantity) AS units_sold,
+       RANK() OVER (ORDER BY SUM(oi.quantity) DESC) AS sales_rank
+FROM order_items oi
+JOIN products p ON p.id = oi.product_id
+GROUP BY p.id, p.prod_name
+ORDER BY sales_rank, p.prod_name
+LIMIT 10
+"""
+
+
+def top_products() -> list[tuple[Any, ...]]:
+    """Return (prod_name, units_sold, sales_rank) for the 10 best sellers."""
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(TOP_PRODUCTS_SQL)
+            return cur.fetchall()
+    finally:
+        release_connection(conn)
+
+
+def products_with_metadata(wanted: dict[str, Any]) -> list[str]:
+    """Names of products whose JSONB metadata contains `wanted` (uses @>)."""
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT prod_name FROM products WHERE metadata @> %s ORDER BY id",
+                (Json(wanted),),
+            )
             return [row[0] for row in cur.fetchall()]
     finally:
         release_connection(conn)
