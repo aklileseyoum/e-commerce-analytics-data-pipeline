@@ -1,4 +1,4 @@
-"""CRUD functions for PostgreSQL. Prices are stored as integer cents."""
+"""CRUD functions for PostgreSQL. Prices are stored as decimals."""
 
 from datetime import date
 from typing import Any
